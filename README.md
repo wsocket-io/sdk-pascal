@@ -27,7 +27,7 @@ var
   Client: TWSocketClient;
   Channel: TWSocketChannel;
 begin
-  Client := TWSocketClient.Create('wss://your-server.com', 'your-api-key');
+  Client := TWSocketClient.Create('wss://node00.wsocket.online', 'your-api-key');
   
   Client.OnConnect := procedure
   begin
@@ -90,7 +90,7 @@ end;
 var
   Push: TWSocketPush;
 begin
-  Push := TWSocketPush.Create('https://your-server.com', 'secret', 'app1');
+  Push := TWSocketPush.Create('https://node00.wsocket.online', 'secret', 'app1');
 
   Push.RegisterFCM('device-token', 'user-123');
   Push.SendToMember('user-123', '{"title":"Hello","body":"World"}');
