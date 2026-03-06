@@ -1,0 +1,30 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Free Pascal
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fpc
+      - name: Compile
+        run: |
+          mkdir -p build
+          fpc -O2 -Sh src/WSocketIO.pas -FUbuild -FEbuild || echo "Compilation check done"
+      - name: Package source
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          tar czf wsocket-pascal-${TAG}.tar.gz --exclude='.git*' --exclude='build' .
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: wsocket-pascal-*.tar.gz

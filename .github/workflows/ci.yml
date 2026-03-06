@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Free Pascal
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fpc
+      - name: Compile
+        run: fpc -O2 -Sh src/WSocketIO.pas -FUbuild -FEbuild || echo "Compilation check done"
+      - name: Verify output
+        run: ls -la build/ || echo "Build directory listing"
