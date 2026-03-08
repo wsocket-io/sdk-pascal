@@ -98,6 +98,16 @@ begin
   Push.RegisterFCM('device-token', 'user-123');
   Push.SendToMember('user-123', '{"title":"Hello","body":"World"}');
   Push.Broadcast('{"title":"News","body":"Update available"}');
+
+  // Channel targeting
+  Push.AddChannel('subscription-id', 'alerts');
+  Push.RemoveChannel('subscription-id', 'alerts');
+
+  // VAPID key
+  VapidKey := Push.GetVapidKey;
+
+  // List subscriptions
+  Subs := Push.ListSubscriptions('user-123');
 end;
 ```
 
