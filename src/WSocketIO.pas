@@ -149,6 +149,7 @@ type
     procedure SendToMember(const MemberId, Payload: string);
     procedure Broadcast(const Payload: string);
     procedure Unregister(const MemberId: string; const Platform: string = '');
+    procedure DeleteSubscription(const SubscriptionId: string);
   end;
 
   { ─── Client ────────────────────────────────────────────── }
@@ -484,6 +485,11 @@ begin
     Body := Body + ',"platform":"' + Platform + '"';
   Body := Body + '}';
   DoPost('unregister', Body);
+end;
+
+procedure TWSocketPush.DeleteSubscription(const SubscriptionId: string);
+begin
+  DoPost('unregister', '{"subscriptionId":"' + SubscriptionId + '"}');
 end;
 
 { ─── TWSocketClient ──────────────────────────────────────── }
