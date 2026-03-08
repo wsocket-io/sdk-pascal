@@ -141,6 +141,7 @@ type
     FToken: string;
     FAppId: string;
     function DoPost(const Path, Body: string): string;
+    function DoRequest(const Method, Url: string): string;
   public
     constructor Create(const ABaseUrl, AToken, AAppId: string);
 
@@ -150,6 +151,10 @@ type
     procedure Broadcast(const Payload: string);
     procedure Unregister(const MemberId: string; const Platform: string = '');
     procedure DeleteSubscription(const SubscriptionId: string);
+    procedure AddChannel(const SubscriptionId, Channel: string);
+    procedure RemoveChannel(const SubscriptionId, Channel: string);
+    function GetVapidKey: string;
+    function ListSubscriptions(const MemberId: string): string;
   end;
 
   { ─── Client ────────────────────────────────────────────── }
@@ -456,6 +461,25 @@ begin
   end;
 end;
 
+function TWSocketPush.DoRequest(const Method, Url: string): string;
+var
+  HTTP: TFPHTTPClient;
+  RS: TStringStream;
+begin
+  HTTP := TFPHTTPClient.Create(nil);
+  RS := TStringStream.Create('');
+  try
+    HTTP.AddHeader('Authorization', 'Bearer ' + FToken);
+    HTTP.AddHeader('X-App-Id', FAppId);
+    HTTP.AddHeader('Content-Type', 'application/json');
+    HTTP.HTTPMethod(Method, Url, RS, []);
+    Result := RS.DataString;
+  finally
+    RS.Free;
+    HTTP.Free;
+  end;
+end;
+
 procedure TWSocketPush.RegisterFCM(const DeviceToken, MemberId: string);
 begin
   DoPost('register', '{"memberId":"' + MemberId + '","platform":"fcm","subscription":{"deviceToken":"' + DeviceToken + '"}}');
@@ -489,7 +513,27 @@ end;
 
 procedure TWSocketPush.DeleteSubscription(const SubscriptionId: string);
 begin
-  DoPost('unregister', '{"subscriptionId":"' + SubscriptionId + '"}');
+  DoRequest('DELETE', FBaseUrl + '/api/push/subscriptions/' + SubscriptionId);
+end;
+
+procedure TWSocketPush.AddChannel(const SubscriptionId, Channel: string);
+begin
+  DoPost('channels/add', '{"subscriptionId":"' + SubscriptionId + '","channel":"' + Channel + '"}');
+end;
+
+procedure TWSocketPush.RemoveChannel(const SubscriptionId, Channel: string);
+begin
+  DoPost('channels/remove', '{"subscriptionId":"' + SubscriptionId + '","channel":"' + Channel + '"}');
+end;
+
+function TWSocketPush.GetVapidKey: string;
+begin
+  Result := DoRequest('GET', FBaseUrl + '/api/push/vapid-key');
+end;
+
+function TWSocketPush.ListSubscriptions(const MemberId: string): string;
+begin
+  Result := DoRequest('GET', FBaseUrl + '/api/push/subscriptions?memberId=' + MemberId);
 end;
 
 { ─── TWSocketClient ──────────────────────────────────────── }
