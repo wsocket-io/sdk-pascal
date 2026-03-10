@@ -518,12 +518,12 @@ end;
 
 procedure TWSocketPush.AddChannel(const SubscriptionId, Channel: string);
 begin
-  DoPost('channels/add', '{"subscriptionId":"' + SubscriptionId + '","channel":"' + Channel + '"}');
+  DoPost('channels/add', '{"memberId":"' + SubscriptionId + '","channel":"' + Channel + '"}');
 end;
 
 procedure TWSocketPush.RemoveChannel(const SubscriptionId, Channel: string);
 begin
-  DoPost('channels/remove', '{"subscriptionId":"' + SubscriptionId + '","channel":"' + Channel + '"}');
+  DoPost('channels/remove', '{"memberId":"' + SubscriptionId + '","channel":"' + Channel + '"}');
 end;
 
 function TWSocketPush.GetVapidKey: string;
